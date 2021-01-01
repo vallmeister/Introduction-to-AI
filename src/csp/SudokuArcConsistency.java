@@ -14,12 +14,11 @@ import java.util.*;
 public class SudokuArcConsistency {
 
   private static int[][] inputSudoku = new int[9][9];
-  private static boolean[][] isInputCell = new boolean[9][9];
   private static Cell[][] sudokuDomains = new Cell[9][9];
 
   private static List<Integer> numberList() {
     List<Integer> result = new ArrayList<>(9);
-    for (int i = 9; i > 0; i--) {
+    for (int i = 1; i < 10; i++) {
       result.add(i);
     }
     return result;
@@ -36,7 +35,6 @@ public class SudokuArcConsistency {
           int tmp = input.charAt(j) - '0';
           inputSudoku[i][j] = tmp;
           if (tmp != 0) {
-            isInputCell[i][j] = true;
             sudokuDomains[i][j] = new Cell(tmp);
           } else {
             sudokuDomains[i][j] = new Cell(numberList());
@@ -47,19 +45,23 @@ public class SudokuArcConsistency {
       e.printStackTrace();
     }
 
-    int counter;
+    int counter = 0;
     do {
-      counter = 0;
+      //counter = 0;
       for (int i = 0; i < 9; i++) {
         for (int j = 0; j < 9; j++) {
           Cell temp = sudokuDomains[i][j];
-          if (temp.getNumbers().size() == 1) {
+          if (temp.isAssigned()) {
             counter += obtainRowConsistency(temp, i);
             counter += obtainColumnConsistency(temp, j);
             counter += obtainSquareConsistency(temp, i, j);
           }
+          if (temp.getNumbers().size() == 1) {
+            temp.setAssigned();
+          }
         }
       }
+      counter--;
     } while (counter != 0);
 
     // print output
@@ -68,10 +70,10 @@ public class SudokuArcConsistency {
       for (int j = 0; j < 9; j++) {
         builder.append("{");
         TreeSet<Integer> tmp = sudokuDomains[i][j].getNumbers();
-        builder.append(tmp.pollLast());
+        builder.append(tmp.pollFirst());
         while (!tmp.isEmpty()) {
           builder.append(",");
-          builder.append(tmp.pollLast());
+          builder.append(tmp.pollFirst());
         }
         builder.append("}");
       }
@@ -131,20 +133,30 @@ public class SudokuArcConsistency {
 
 class Cell {
   private TreeSet<Integer> numbers;
+  private boolean isAssigned;
 
   Cell(List<Integer> integerList) {
     numbers = new TreeSet<>(integerList);
+    isAssigned = false;
   }
 
   Cell(int number) {
     numbers = new TreeSet<>();
     numbers.add(number);
+    setAssigned();
   }
 
   TreeSet<Integer> getNumbers() {
     return numbers;
   }
 
+  public boolean isAssigned() {
+    return isAssigned;
+  }
+
+  public void setAssigned() {
+    isAssigned = true;
+  }
 }
 
 enum Square {
