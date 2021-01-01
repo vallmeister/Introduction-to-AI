@@ -45,23 +45,20 @@ public class SudokuArcConsistency {
       e.printStackTrace();
     }
 
-    int counter = 0;
+    int counter;
     do {
-      //counter = 0;
+      counter = 0;
       for (int i = 0; i < 9; i++) {
         for (int j = 0; j < 9; j++) {
           Cell temp = sudokuDomains[i][j];
-          if (temp.isAssigned()) {
+          if (temp.getNumbers().size() == 1) {
             counter += obtainRowConsistency(temp, i);
             counter += obtainColumnConsistency(temp, j);
             counter += obtainSquareConsistency(temp, i, j);
           }
-          if (temp.getNumbers().size() == 1) {
-            temp.setAssigned();
-          }
         }
       }
-      counter--;
+      //counter--;
     } while (counter != 0);
 
     // print output
@@ -133,29 +130,18 @@ public class SudokuArcConsistency {
 
 class Cell {
   private TreeSet<Integer> numbers;
-  private boolean isAssigned;
 
   Cell(List<Integer> integerList) {
     numbers = new TreeSet<>(integerList);
-    isAssigned = false;
   }
 
   Cell(int number) {
     numbers = new TreeSet<>();
     numbers.add(number);
-    setAssigned();
   }
 
   TreeSet<Integer> getNumbers() {
     return numbers;
-  }
-
-  public boolean isAssigned() {
-    return isAssigned;
-  }
-
-  public void setAssigned() {
-    isAssigned = true;
   }
 }
 
