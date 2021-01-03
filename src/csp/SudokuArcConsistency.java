@@ -25,7 +25,6 @@ public class SudokuArcConsistency {
   }
 
   public static void main(String[] args) {
-
     // read input
     String input;
     try (BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(System.in))){
